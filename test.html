@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+
+<head></head>
+
+<body>
+    <canvas id="drawScreen" width="480" height="360" oncontextmenu="return false;">
+        Game content :D
+    </canvas>
+    <img src="img.png" id="img">
+</body>
+<script>
+    const canvas = document.getElementById("drawScreen")
+    const ctx = canvas.getContext("2d")
+    ctx.imageSmoothingEnabled = false
+    displayImageInTwoWays()
+    function displayImageInTwoWays() {
+        ctx.fillRect(0, 0, 480, 360)
+        ctx.drawImage(document.getElementById("img"), 0, 0, 100, 100)
+        processImage("img", (data) => { return data })
+    }
+    function processImage(src, fun) {
+
+        const oc = new OffscreenCanvas(20, 20)
+        ocScreen = oc.getContext("2d")
+        try {
+            ocScreen.drawImage(document.getElementById(src), 0, 0)
+        }
+        catch (e) {
+            console.log(src)
+            console.warn(e)
+        }
+        let data = fun(ocScreen.getImageData(0, 0, 16, 16))
+        const imgProcess = new Promise((resolve, reject) => {
+            resolve(createImageBitmap(data))
+        })
+        imgProcess.then((img) => {
+            console.log(img)
+            ctx.drawImage(img, 0, 100, 100, 100)
+        })
+    }
+</script>
